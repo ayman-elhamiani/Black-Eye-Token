@@ -12,7 +12,7 @@ describe("Token contract", function () {
   let hardhatToken;
 
   beforeEach(async () =>{
-    [deployer, user1, user2, ...users] = await ethers.getSigners();
+    [deployer, user1, user2,user3, ...users] = await ethers.getSigners();
     Token = await ethers.getContractFactory("Token");
     hardhatToken = await Token.deploy();
   }) 
@@ -25,7 +25,7 @@ describe("Token contract", function () {
     expect(await hardhatToken.symbol()).to.equal("BET");
   });
 
-  it("Deployment should assign the total supply of tokens to the owner", async function () {
+  it("total supply of tokens to the owner", async function () {
     const ownerBalance = await hardhatToken.balanceOf(deployer.address);
     expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
   });
@@ -41,5 +41,14 @@ describe("Token contract", function () {
     await hardhatToken.connect(user1).transfer(user2.address, 40);
     expect(await hardhatToken.balanceOf(user2.address)).to.equal(40);
   });
+ 
+   it("approved",async ()=>{
+    await hardhatToken.transfer(user1.address, 500);
+    await hardhatToken.connect(user1).approve(user2.address , 100);
+    await hardhatToken.connect(user2).transferFrom(user1.address, user3.address, 140);
 
+    expect(await hardhatToken.balanceOf(user3.address)).to.equal(40);
+
+
+   })
 });
